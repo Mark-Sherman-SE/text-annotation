@@ -79,14 +79,13 @@ services:
     build: Dockerfiles/postgres
     container_name: postgres
     environment:
-      POSTGRES_DB: ${AIRFLOW_DATABASE}
       POSTGRES_USER: ${PSQL_USER}
       POSTGRES_PASSWORD: ${PSQL_PASSWORD}
-      POSTGRES_MULTIPLE_DATABASES: ${MLFLOW_DATABASE}
+      POSTGRES_MULTIPLE_DATABASES: ${AIRFLOW_DATABASE},${MLFLOW_DATABASE}
     volumes:
       - postgres-db-volume:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD", "pg_isready", "-U", "${PSQL_USER}", "-d", "${AIRFLOW_DATABASE}"]
+      test: ["CMD", "pg_isready", "-U", "${PSQL_USER}"]
       interval: 5s
       retries: 5
     restart: always
