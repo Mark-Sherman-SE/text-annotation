@@ -6,6 +6,15 @@ from airflow import DAG
 
 # Operators; we need this to operate!
 from airflow.operators.bash import BashOperator
+from airflow.operators.python import PythonOperator
+
+
+def test_cuda_support():
+    import torch
+    print("Is cuda available:", torch.cuda.is_available())
+    #if torch.cuda.is_available():
+    print("CUDA version:", torch.version.cuda)
+
 
 default_args={
     'depends_on_past': False,
@@ -51,8 +60,21 @@ with DAG(
         bash_command=templated_command,
     )
 
+    check_cuda = PythonOperator(
+        task_id='check_cuda_support',
+        python_callable=test_cuda_support,
+    )
+
+    t4 = BashOperator(
+        task_id='check_videocard',
+        depends_on_past=False,
+        bash_command='nvidia-smi',
+    )
+
     dag.doc_md = """
     This is a documentation placed anywhere
     """
     
     t1 >> [t2, t3]
+    [t2, t3] >> check_cuda
+    check_cuda >> t4

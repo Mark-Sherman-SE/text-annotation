@@ -5,3 +5,8 @@ news-please==1.4.26
 mlflow==1.27
 psycopg2
 boto3
+--find-links https://download.pytorch.org/whl/torch_stable.html
+torch==1.12.1+cu116
+--find-links https://download.pytorch.org/whl/torch_stable.html
+torchvision==0.13.1+cu116
+transformers==4.22.2

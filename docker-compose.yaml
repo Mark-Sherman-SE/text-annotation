@@ -46,14 +46,21 @@ x-airflow-common:
   # and uncomment the "build" line below, Then run `docker-compose build` to build the images.
 
   #  image: ${AIRFLOW_IMAGE_NAME:-apache/airflow:2.4.2-python3.10-custom}
+  deploy:
+    resources:
+      reservations:
+        devices:
+          - driver: nvidia
+            capabilities:
+              - gpu
   build: ./Dockerfiles/airflow
   environment:
     &airflow-common-env
     AIRFLOW__CORE__EXECUTOR: CeleryExecutor
-    AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://${PSQL_USER}:${PSQL_PASSWORD}@postgres/${AIRFLOW_DATABASE}
+    AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://${PSQL_USER}:${PSQL_PASSWORD}@postgres:5432/${AIRFLOW_DATABASE}
     # For backward compatibility, with Airflow <2.3
-    AIRFLOW__CORE__SQL_ALCHEMY_CONN: postgresql+psycopg2://${PSQL_USER}:${PSQL_PASSWORD}@postgres/${AIRFLOW_DATABASE}
-    AIRFLOW__CELERY__RESULT_BACKEND: db+postgresql://${PSQL_USER}:${PSQL_PASSWORD}@postgres/${AIRFLOW_DATABASE}
+    AIRFLOW__CORE__SQL_ALCHEMY_CONN: postgresql+psycopg2://${PSQL_USER}:${PSQL_PASSWORD}@postgres:5432/${AIRFLOW_DATABASE}
+    AIRFLOW__CELERY__RESULT_BACKEND: db+postgresql://${PSQL_USER}:${PSQL_PASSWORD}@postgres:5432/${AIRFLOW_DATABASE}
     AIRFLOW__CELERY__BROKER_URL: redis://:@redis:6379/0
     AIRFLOW__CORE__FERNET_KEY: ''
     AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: 'true'
@@ -82,6 +89,8 @@ services:
       POSTGRES_USER: ${PSQL_USER}
       POSTGRES_PASSWORD: ${PSQL_PASSWORD}
       POSTGRES_MULTIPLE_DATABASES: ${AIRFLOW_DATABASE},${MLFLOW_DATABASE}
+    ports:
+      - 5432:5432
     volumes:
       - postgres-db-volume:/var/lib/postgresql/data
     healthcheck:
@@ -91,7 +100,7 @@ services:
     restart: always
 
   mlflow-server:
-    #container_name: mlflow-server
+    container_name: mlflow-server
     build: Dockerfiles/mlflow
     #image: mlflow_server
     ports:
@@ -106,7 +115,7 @@ services:
     #      - MLFLOW_S3_ENDPOINT_URL=http://minio:9000
     #      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
     #      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
-    command: mlflow server --host 0.0.0.0 --backend-store-uri postgresql+psycopg2://${PSQL_USER}:${PSQL_PASSWORD}@postgres/${MLFLOW_DATABASE} --default-artifact-root ./mlruns
+    command: mlflow server --host 0.0.0.0 --backend-store-uri postgresql+psycopg2://${PSQL_USER}:${PSQL_PASSWORD}@postgres:5432/${MLFLOW_DATABASE} --default-artifact-root ./mlruns
     restart: always
     #mlflow server --host 0.0.0.0 --backend-store-uri postgresql+psycopg2://${PSQL_USER}:${PSQL_PASSWORD}@postgres/${MLFLOW_DATABASE} --default-artifact-root $${ARTIFACTS}
   #command: mlflow server --backend-store-uri mysql+pymysql://${MYSQL_USER}:${MYSQL_PASSWORD}@db:3306/${MYSQL_DATABASE} --default-artifact-root s3://mlflow/ --host 0.0.0.0
