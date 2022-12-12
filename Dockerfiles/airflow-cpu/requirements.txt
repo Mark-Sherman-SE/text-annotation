@@ -6,9 +6,9 @@ mlflow==2.0.1
 psycopg2
 boto3
 --find-links https://download.pytorch.org/whl/torch_stable.html
-torch==1.12.1+cu116
+torch==1.12.1+cpu
 --find-links https://download.pytorch.org/whl/torch_stable.html
-torchvision==0.13.1+cu116
+torchvision==0.13.1+cpu
 sentencepiece==0.1.97
 datasets==2.7.1
 tensorflow-probability==0.17.0

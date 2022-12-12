@@ -120,6 +120,34 @@ services:
     #mlflow server --host 0.0.0.0 --backend-store-uri postgresql+psycopg2://${PSQL_USER}:${PSQL_PASSWORD}@postgres/${MLFLOW_DATABASE} --default-artifact-root $${ARTIFACTS}
   #command: mlflow server --backend-store-uri mysql+pymysql://${MYSQL_USER}:${MYSQL_PASSWORD}@db:3306/${MYSQL_DATABASE} --default-artifact-root s3://mlflow/ --host 0.0.0.0
 
+  grafana:
+    container_name: grafana
+    image: grafana/grafana:8.5.3-ubuntu
+    ports:
+      - "3000:3000"
+
+  prometheus:
+    container_name: prometheus
+    image: prom/prometheus:v2.36.0
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./Dockerfiles/prometheus/:/etc/prometheus/
+
+  node-exporter:
+    container_name: node-exporter
+    image: prom/node-exporter:v1.3.1
+    ports:
+      - "9100:9100"
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/rootfs:ro
+    command:
+      - '--path.procfs=/host/proc'
+      - '--path.sysfs=/host/sys'
+      - '--collector.filesystem.mount-points-exclude'
+      - '^/(sys|proc|dev|host|etc|rootfs/var/lib/docker/containers|rootfs/var/lib/docker/overlay2|rootfs/run/docker/netns|rootfs/var/lib/docker/aufs)($$|/)'
 
   redis:
     image: redis:latest

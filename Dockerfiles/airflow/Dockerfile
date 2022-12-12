@@ -1,7 +1,7 @@
 FROM apache/airflow:2.4.2-python3.10
 USER root
 WORKDIR /home/airflow
-RUN cd $AIRFLOW_USER_HOME_DIR
+RUN cd /home/airflow
 CMD ["bash"]
 ENV NVARCH=x86_64
 ENV NV_CUDA_CUDART_VERSION=11.6.55-1
@@ -51,8 +51,11 @@ ENV PATH=/home/airflow/.local/bin:/usr/local/bin:/usr/local/sbin:/usr/local/bin:
 #ENV NVIDIA_VISIBLE_DEVICES=all
 #ENV NVIDIA_DRIVER_CAPABILITIES=compute,utility
 CMD []
+#USER root
+ENV HF_HOME=/opt/airflow/src/
+ENV TRANSFORMERS_CACHE=/opt/airflow/src/
 WORKDIR /opt/airflow
-RUN cd $AIRFLOW_HOME
+RUN cd /opt/airflow
 COPY requirements.txt .
 COPY download_nltk_data.py .
 USER airflow
