@@ -1,7 +1,7 @@
 FROM apache/airflow:2.4.2-python3.10
 USER root
-ENV HF_HOME=/opt/airflow/src/
-ENV TRANSFORMERS_CACHE=/opt/airflow/src/
+ENV HF_HOME=/opt/airflow/models/loaded
+ENV TRANSFORMERS_CACHE=/opt/airflow/models/loaded
 COPY requirements.txt .
 COPY download_nltk_data.py .
 USER airflow

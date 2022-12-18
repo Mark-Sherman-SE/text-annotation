@@ -52,8 +52,8 @@ ENV PATH=/home/airflow/.local/bin:/usr/local/bin:/usr/local/sbin:/usr/local/bin:
 #ENV NVIDIA_DRIVER_CAPABILITIES=compute,utility
 CMD []
 #USER root
-ENV HF_HOME=/opt/airflow/src/
-ENV TRANSFORMERS_CACHE=/opt/airflow/src/
+ENV HF_HOME=/opt/airflow/models/loaded
+ENV TRANSFORMERS_CACHE=/opt/airflow/models/loaded
 WORKDIR /opt/airflow
 RUN cd /opt/airflow
 COPY requirements.txt .
